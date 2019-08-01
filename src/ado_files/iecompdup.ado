@@ -5,7 +5,7 @@
 
 	qui {
 
-		syntax varname [if],  id(string) [DIDIfference KEEPDIFFerence KEEPOTHer(varlist) more2ok]
+		syntax varname [=/ exp] [if],  [DIDIfference KEEPDIFFerence KEEPOTHer(varlist) more2ok id(string)]
 
 		version 11.0
 
@@ -15,6 +15,27 @@
 	Test syntax
 *******************************************************************************/
 
+
+				noi di as error "{phang}=exp required.{p_end}"
+				noi di ""
+				error 100
+				exit
+			}
+			
+			else if "`exp'" != "" & "`id'" != "" {
+
+				noi di as error "{phang}=exp and id() cannot be used together. id() is an old syntax for this command and is only kept for backward compatibility purposes.{p_end}"
+				noi di ""
+				error 100
+				exit
+			}
+			
+			* If only exp was used, save it as the input in id so the command 
+			* knows how to process it
+			else if "`exp'" != "" & "`id'" == "" {
+				local id = trim("`exp'")
+			}
+			
 			* More2ok and if are meant to solve the same problem, so they cannot be used together
 			if "`more2ok'" != "" & `"`if'"' != "" {
 
@@ -148,7 +169,7 @@
 		if "`keepdifference'" != "" & "`difference'" != "" {
 
 			order `varlist' `difference' `keepother'
-			keep `varlist' `difference' `keepother'
+			keep  `varlist' `difference' `keepother'
 
 			* Drop differently depending on numeric or string
 			cap confirm numeric variable `varlist'
